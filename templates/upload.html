@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NSFW Image Detection</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: #333; }
-        #result { margin-top: 20px; font-weight: bold; }
-        #image-container { margin-top: 20px; }
-        #uploaded-image { max-width: 100%; max-height: 400px; }
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f0f0f0; }
+        h1 { color: #333; text-align: center; }
+        #upload-form { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #result { margin-top: 20px; font-weight: bold; padding: 10px; background-color: #e7e7e7; border-radius: 4px; }
+        #image-container { margin-top: 20px; text-align: center; }
+        #uploaded-image { max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #loading { text-align: center; margin-top: 20px; font-style: italic; }
+        button { padding: 10px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #45a049; }
     </style>
 </head>
 <body>
@@ -17,13 +21,25 @@
     <form id="upload-form" enctype="multipart/form-data">
         <input type="file" name="file" accept="image/*" required>
         <button type="submit">Upload and Check</button>
+        <button type="button" id="reset-btn">Reset</button>
     </form>
+    <div id="loading" style="display: none;">Processing...</div>
     <div id="result"></div>
     <div id="image-container"></div>
 
     <script>
-        document.getElementById('upload-form').addEventListener('submit', function(e) {
+        const form = document.getElementById('upload-form');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const imageContainer = document.getElementById('image-container');
+        const resetBtn = document.getElementById('reset-btn');
+
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
+            loading.style.display = 'block';
+            result.textContent = '';
+            imageContainer.innerHTML = '';
+
             var formData = new FormData(this);
             fetch('/', {
                 method: 'POST',
@@ -31,23 +47,27 @@
             })
             .then(response => response.json())
             .then(data => {
-                let resultDiv = document.getElementById('result');
-                let imageContainer = document.getElementById('image-container');
+                loading.style.display = 'none';
                 if (data.error) {
-                    resultDiv.textContent = 'Error: ' + data.error;
-                    imageContainer.innerHTML = '';
+                    result.textContent = 'Error: ' + data.error;
                 } else {
-                    resultDiv.textContent = `Is NSFW: ${data.is_nsfw}, Confidence: ${data.confidence}`;
+                    result.textContent = `Is NSFW: ${data.is_nsfw}, Confidence: ${data.confidence}`;
                     imageContainer.innerHTML = `
                         <img id="uploaded-image" src="${data.image_url}" alt="Uploaded image">
                     `;
                 }
             })
             .catch(error => {
+                loading.style.display = 'none';
                 console.error('Error:', error);
-                document.getElementById('result').textContent = 'An error occurred.';
-                document.getElementById('image-container').innerHTML = '';
+                result.textContent = 'An error occurred. Please try again.';
             });
+        });
+
+        resetBtn.addEventListener('click', function() {
+            form.reset();
+            result.textContent = '';
+            imageContainer.innerHTML = '';
         });
     </script>
 </body>
