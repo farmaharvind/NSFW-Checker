@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSFW Image Detection</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        #result { margin-top: 20px; font-weight: bold; }
+        #image-container { margin-top: 20px; }
+        #uploaded-image { max-width: 100%; max-height: 400px; }
+    </style>
+</head>
+<body>
+    <h1>NSFW Image Detection</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Upload and Check</button>
+    </form>
+    <div id="result"></div>
+    <div id="image-container"></div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                let resultDiv = document.getElementById('result');
+                let imageContainer = document.getElementById('image-container');
+                if (data.error) {
+                    resultDiv.textContent = 'Error: ' + data.error;
+                    imageContainer.innerHTML = '';
+                } else {
+                    resultDiv.textContent = `Is NSFW: ${data.is_nsfw}, Confidence: ${data.confidence}`;
+                    imageContainer.innerHTML = `
+                        <img id="uploaded-image" src="${data.image_url}" alt="Uploaded image">
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').textContent = 'An error occurred.';
+                document.getElementById('image-container').innerHTML = '';
+            });
+        });
+    </script>
+</body>
+</html>
