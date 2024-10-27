@@ -20,7 +20,7 @@ This project provides a Python script for detecting NSFW (Not Safe For Work) ima
 
 You can install required packages with the following command:
 
-```bash
+
 pip install requests python-dotenv
 
 ## Setup
@@ -39,7 +39,6 @@ eplace `your_huggingface_api_key` with the actual API key from your Hugging Face
 
 To run the `nsfw_image_detection.py` script and check if an image is NSFW, use the following command:
 
-```bash
 python nsfw_image_detection.py
 
 In the script, specify the path to an image file for testing:
