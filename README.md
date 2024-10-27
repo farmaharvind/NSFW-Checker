@@ -17,6 +17,7 @@ This project provides a Python script for detecting NSFW (Not Safe For Work) ima
 - Python Packages:
   - `requests` - For making HTTP requests.
   - `python-dotenv` - For loading environment variables from a `.env` file.
+- [Machine Learning Model](https://huggingface.co/Falconsai/nsfw_image_detection)
 
 You can install required packages with the following command:
 
